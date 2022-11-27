@@ -4,6 +4,8 @@ rpc.exports = {
         var libso = Process.findModuleByName(so_name);
         return libso;
     },
+
+    //  return 返回的数据超过20MB时会触发异常。
     dumpmodule: function(so_name) {
         var libso = Process.findModuleByName(so_name);
         if (libso == null) {
@@ -15,6 +17,21 @@ rpc.exports = {
         // libso.buffer = libso_buffer;
         return libso_buffer;
     },
+
+    dumpmodulePath: function(so_name , elfPath){
+      var libso = Process.findModuleByName(so_name);
+
+      if(libso ==null){
+          return -1;
+      }
+      send(libso);
+      Memory.protect(ptr(libso.base) , libso.size , 'rwx');
+      var libso_buffer = ptr(libso.base).readByteArray(libso.size);
+      var file = new File(elfPath  , "wb");
+      file.write(libso_buffer);
+      file.close();
+    },
+
     arch: function() {
         return Process.arch;
     },
