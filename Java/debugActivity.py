@@ -21,16 +21,21 @@ if __name__ == '__main__':
     startcom = "adb shell am start -D {0}/{1}".format(package,activity)
 
     subprocess.run(startcom , shell=True , check=True)
-
-    getpid = "adb shell \" ps | grep {0} | awk '{{print $2}}'\"".format(package);
-    print(getpid)
-
+    # cmd
+    #getpid = "adb shell \" ps -A| grep {0} | awk '{{print $2}}'\"".format(package);
+    # bash
+    getpid = "adb shell \" ps -A| grep {0} | awk '{{print \$2}}'\"".format(package);
+    # command
+    # getpid = "adb shell \" ps | grep {0} | awk '{{print $2}}'\"".format(package);
     spid = subprocess.run(getpid,shell=True , capture_output=True , text=True).stdout
 
-    subprocess.run("adb forward tcp:8700 jdwp:{0}".format(spid))
+    spid ="adb forward tcp:8700 jdwp:{0}".format(spid)
+    spid=spid.replace('\n','')
+    print(spid)
+    subprocess.run(spid , shell=True)
 
     input("Press Enter to run app...")
-    proc = subprocess.run("jdb -connect com.sun.jdi.SocketAttach:hostname=localhost,port=8700", text=True )
+    proc = subprocess.run("jdb -connect com.sun.jdi.SocketAttach:hostname=localhost,port=8700", shell=True,text=True )
 
 
     # print(args.filename ,args.count , args.verbose )
